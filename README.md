@@ -135,6 +135,38 @@ Ano do livro: 2021
 ```
 - 2 - O livro será salvo com a situação inicial D - Disponível.
 
+# ETAPA DO PROJETO
+## Feito Até o Momento
+
+### ✅ 1. Incluir novos livros
+- A situação do livro deve ser **D - Disponível**.
+- A quantidade de empréstimos deve ser **0**.
+
+### ⚠️ 2. Alterar, pesquisar e excluir/recuperar livros
+- A exclusão dos livros deve ser feita de forma lógica, sem excluir fisicamente os registros.
+- Ao alterar, a quantidade de empréstimos **não deve ser alterada**.
+
+### ✅ 3. Apresentar a lista de livros
+- A lista de livros deve incluir a situação do livro (**Emprestado** ou **Disponível**).
+- Ao final, deve-se apresentar a quantidade total de empréstimos realizados pela biblioteca, considerando todos os livros.
+
+### ❗ 4. Incluir um novo empréstimo
+- O número de tombo do livro deve ser solicitado.
+- O livro deve ser localizado no arquivo, e seus dados devem ser apresentados.
+- O usuário deve ser perguntado se o livro será emprestado.
+- Caso confirmado, a situação do livro será alterada para **E - Emprestado**, e a quantidade de empréstimos aumentada em **1**.
+- O empréstimo só pode ser realizado para livros que estejam **Disponíveis**.
+
+### ❗ 5. Realizar a devolução do livro
+- O número do tombo do livro deve ser solicitado.
+- Os dados do livro devem ser apresentados, e o usuário deve ser perguntado se deseja devolver o livro.
+- Quando o livro for devolvido, a situação deve ser alterada para **D - Disponível**.
+
+### ✅ 6. Apresentar uma relação de livros emprestados
+- A lista deve incluir apenas os livros **emprestados**.
+- Ao final, deve-se apresentar a quantidade total de livros emprestados.
+
+
 ## 🖋️ Autor(es)
 Este projeto foi desenvolvido por estudantes do curso de Bacharelado em Ciência da Computação.<br>
 **Professores Orientadores: André e Melissa**.<br>
