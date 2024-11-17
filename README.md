@@ -58,7 +58,7 @@ Este trabalho foi desenvolvido como parte da disciplina **Algoritmos e Programa�
 A estrutura `tp_livro` define os campos necessários para representar um livro:
 ```c
 typedef struct {
-    char titulo_livro[50], autores_livro[50];
+    char titulo_livro[100], autores_livro[100];
     char situacao; // 'D' para Disponível, 'E' para Emprestado
     int Nr_tombo_livro, ano_livro, qntEmprestimo_livro;
     bool flag; // true para ativo, false para excluído logicamente
