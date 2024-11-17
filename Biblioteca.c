@@ -59,7 +59,7 @@ void cadastrar_livros() {
     do {
         livro = criar_livro();
         adicionar_livro(livro);
-        printf("\nCadastrar outro Livro ?");
+        printf("\nCadastrar outro Livro <S/N>:?");
         scanf(" %c", &continua);
         continua = toupper(continua);
     } while (continua == 'S');
@@ -130,6 +130,26 @@ int encontrar_livro_por_titulo(char titulo_livro[]) {
     return posicao;
 }
 
+int encontrar_livro_por_tombo(int Nr_tombo_Livro) {
+    FILE *arq;
+    tp_livro livro;
+    int i = 0, posicao = -1;
+    arq = fopen("biblioteca.dat", "rb");
+    if (arq == NULL) {
+        printf("\nNao existe o arquivo.");
+    } else {
+        fread(&livro, sizeof(tp_livro), 1, arq);
+        while (!feof(arq) && posicao == -1) {
+            if (livro.Nr_tombo_livro == Nr_tombo_Livro)
+                posicao = i;
+            fread(&livro, sizeof(tp_livro), 1, arq);
+            i++;
+        }
+        fclose(arq);
+    }
+    return posicao;
+}
+
 
 void sobreescrever_livro(tp_livro livro, int posicao) {
     FILE *arq;
@@ -150,23 +170,24 @@ void alterar_livro() {
     int pos;
 
     fflush(stdin);
-    printf("Titulo do livro...: ");
+    printf("Informe o titulo do livro que deseja alterar...: ");
     gets(titulo_livro);
     pos = encontrar_livro_por_titulo(titulo_livro);
     if (pos == -1) {
-        printf("\nO Livro nao foi localizado.");
+        printf("\nO Livro nao foi encontrado. Verifique o titulo e tente novamente.\n");
+
     } else {
         livro = buscar_livro_por_posicao(pos);
-        printf("\nO Livro foi Localizado...\n");
+        printf("\nLivro localizado com sucesso!\n");
         printf("\n");
         apresentar_cabecalho();
         mostrar_livro(livro);
         if (livro.flag) {
-            printf("\n\nDigite os novos dados do aluno\n");
+            printf("\nDigite os novos dados para o livro selecionado...\n");
             livro = criar_livro();
             sobreescrever_livro(livro, pos);
         } else {
-            printf("\nO Livro pesquisado esta excluido (OCULTO). nao eh possivel alterar\n");
+            printf("\nEste livro foi excluido e nao pode ser alterado no momento.\n");
         }
     }
 }
@@ -184,12 +205,14 @@ void pesquisar_por_titulo() {
         printf("\nO Livro nao foi localizado.");
     } else {
         livro = buscar_livro_por_posicao(pos);
-        if (!livro.flag)
-            printf("\nO Livro foi Localizado...\n");
-        printf("\n");
-        apresentar_cabecalho();
-        mostrar_livro(livro);
-        printf("\nO Livro pesquisado esta excluido (OCULTO).\n");
+        if (!livro.flag) {
+            printf("\nLivro localizado com sucesso!\n");
+            printf("\n");
+            apresentar_cabecalho();
+            mostrar_livro(livro);
+        } else {
+            printf("\nO Livro pesquisado esta excluido (OCULTO).\n");
+        }
     }
 }
 
@@ -199,11 +222,11 @@ void excluir_titulo() {
     int pos;
 
     fflush(stdin);
-    printf("Titulo do livro...: ");
+    printf("Informe o titulo do livro que deseja excluir...:");
     gets(titulo_livro);
     pos = encontrar_livro_por_titulo(titulo_livro);
     if (pos == -1) {
-        printf("\nO Livro nao foi localizado...\n");
+        printf("\nLivro nao encontrado. Certifique-se de que o titulo esta correto e tente novamente.\n");
     } else {
         livro = buscar_livro_por_posicao(pos);
         printf("\nLivro Selecionado para exlucsao:\n");
@@ -218,7 +241,7 @@ void excluir_titulo() {
                 sobreescrever_livro(livro, pos);
             }
         } else {
-            printf("\nO Livro ja esta excluido, nao eh possivel exclui-lo novamente\n");
+            printf("\nO livro ja foi excluido anteriormente e nao pode ser excluido novamente.\n");
         }
     }
 }
@@ -230,11 +253,11 @@ void recuperar_titulo() {
     int pos;
 
     fflush(stdin);
-    printf("Titulo do livro...: ");
+    printf("Informe o titulo do livro que deseja recuperar..: ");
     gets(titulo_livro);
     pos = encontrar_livro_por_titulo(titulo_livro);
     if (pos == -1) {
-        printf("\nO Livro não foi localizado...\n");
+        printf("\nLivro nao encontrado. Certifique-se de que o titulo esta correto e tente novamente.\n");
     } else {
         livro = buscar_livro_por_posicao(pos);
         printf("\nLivro Selecionado para recuperacao:\n");
@@ -249,10 +272,10 @@ void recuperar_titulo() {
                 sobreescrever_livro(livro, pos);
                 printf("\nLivro recuperado com sucesso!\n");
             } else {
-                printf("\nRecuperação cancelada.\n");
+                printf("\nRecuperacao cancelada.\n");
             }
         } else {
-            printf("\nO livro ja esta ativo. Nao ha necessidade de recuperara-lo...\n");
+            printf("\nO livro ja esta ativo e nao precisa ser recuperado.\n");
         }
     }
 }
@@ -279,6 +302,78 @@ int somar_emprestimos() {
     return contEmprestimo;
 }
 
+void realizar_emprestimo() {
+    char emprestar;
+    int Nr_tombo_livro, pos;
+    tp_livro livro;
+
+    fflush(stdin);
+    printf("Informe o numero do tombo do livro que deseja emprestar...: ");
+    scanf("%d", &Nr_tombo_livro);
+    pos = encontrar_livro_por_tombo(Nr_tombo_livro);
+    if (pos == -1) {
+        printf("\nLivro nao encontrado. Certifique-se de que o numero do tombo esta correto e tente novamente.\n");
+    } else {
+        livro = buscar_livro_por_posicao(pos);
+        printf("\nLivro localizado com sucesso!\n");
+        printf("\n");
+        apresentar_cabecalho();
+        mostrar_livro(livro);
+
+        if(livro.situacao == 'D') {
+            printf("Deseja realmente emprestar o livro? <S/N>: ");
+            scanf(" %c", &emprestar);
+            emprestar = toupper(emprestar);
+            if (emprestar == 'S') {
+                livro.situacao = 'E';
+                livro.qntEmprestimo_livro++;
+                sobreescrever_livro(livro, pos);
+                printf("\nLivro emprestado com sucesso!\n");
+
+            } else {
+                printf("\nOperacao de emprestimo cancelada.\n");
+            }
+        } else {
+            printf("\nO livro ja esta emprestado e indisponivel no momento.\n");
+        }
+    }
+}
+
+void realizar_devolucao() {
+    char devolver;
+    int Nr_tombo_livro, pos;
+    tp_livro livro;
+
+    fflush(stdin);
+    printf("Informe o numero do tombo do livro que deseja devolver...: ");
+    scanf("%d", &Nr_tombo_livro);
+    pos = encontrar_livro_por_tombo(Nr_tombo_livro);
+    if (pos == -1) {
+        printf("\nLivro nao encontrado. Certifique-se de que o numero do tombo esta correto e tente novamente.\n");
+    } else {
+        livro = buscar_livro_por_posicao(pos);
+        printf("\nLivro localizado com sucesso!\n");
+        printf("\n");
+        apresentar_cabecalho();
+        mostrar_livro(livro);
+
+        if(livro.situacao == 'E') {
+            printf("\nDeseja confirmar a devolucao do livro? (S/N): ");
+            scanf(" %c", &devolver);
+            devolver = toupper(devolver);
+            if (devolver == 'S') {
+                livro.situacao = 'D';
+                sobreescrever_livro(livro, pos);
+                printf("\nDevolucao realizada com sucesso!\n");
+
+            } else {
+                printf("\nDevolucao cancelada pelo usuário.\n");
+            }
+        } else {
+                printf("\nEste livro nao esta registrado como emprestado. Devolução nao necessária.\n");
+        }
+    }
+}
 
 void mostrar_livros_por_filtro() {
     FILE *arq;
@@ -356,7 +451,6 @@ void listar_emprestados() {
     }
     printf("\nQuantidade de Livros Emprestados: %d\n", qtd_emprestados);
 }
-
 
 int menu_principal() {
     int op;
@@ -444,10 +538,14 @@ void main() {
 
             case 4:
                 printf("\nRealizar Emprestimo selecionado.\n");
+                realizar_emprestimo();
+                printf("\n");
                 break;
 
             case 5:
                 printf("\nRealizar Devolucao selecionada.\n");
+                realizar_devolucao();
+                printf("\n");
                 break;
 
             case 6:
@@ -458,6 +556,5 @@ void main() {
         }
         op = menu_principal();
     }
-
     printf("\nFinalizando o Sistema.\n");
 }
