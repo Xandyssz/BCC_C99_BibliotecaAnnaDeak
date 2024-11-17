@@ -95,13 +95,13 @@ typedef struct {
 ### - Passo a Passo
 - Clone o Repositório:
 ```
-git clone https://github.com/Xandyssz/controle-livros.git
-cd controle-livros
+git clone https://github.com/Xandyssz/BCC_C99_BibliotecaAnnaDeak.git
+cd BCC_C99_BibliotecaAnnaDeak
 ```
 
 - Compile o Código:
 ```
-gcc -o biblioteca main.c
+gcc -o biblioteca biblioteca.c
 ```
 
 - Execute o programa:
