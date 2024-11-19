@@ -167,7 +167,7 @@ void sobreescrever_livro(tp_livro livro, int posicao) {
 void alterar_livro() {
     char titulo_livro[100];
     tp_livro livro;
-    int pos;
+    int pos, qntEmprestimo;
 
     fflush(stdin);
     printf("Informe o titulo do livro que deseja alterar...: ");
@@ -175,16 +175,18 @@ void alterar_livro() {
     pos = encontrar_livro_por_titulo(titulo_livro);
     if (pos == -1) {
         printf("\nO Livro nao foi encontrado. Verifique o titulo e tente novamente.\n");
-
     } else {
         livro = buscar_livro_por_posicao(pos);
         printf("\nLivro localizado com sucesso!\n");
         printf("\n");
         apresentar_cabecalho();
         mostrar_livro(livro);
+        qntEmprestimo = qntEmprestimo +  livro.qntEmprestimo_livro;
+        printf("Quantidade de Emprestimos do Livro: %d...:", qntEmprestimo);
         if (livro.flag) {
             printf("\nDigite os novos dados para o livro selecionado...\n");
             livro = criar_livro();
+            livro.qntEmprestimo_livro = qntEmprestimo;
             sobreescrever_livro(livro, pos);
         } else {
             printf("\nEste livro foi excluido e nao pode ser alterado no momento.\n");
@@ -219,30 +221,51 @@ void pesquisar_por_titulo() {
 void excluir_titulo() {
     char titulo_livro[100], excluir;
     tp_livro livro;
-    int pos;
+    int pos, op;
 
-    fflush(stdin);
-    printf("Informe o titulo do livro que deseja excluir...:");
-    gets(titulo_livro);
-    pos = encontrar_livro_por_titulo(titulo_livro);
-    if (pos == -1) {
-        printf("\nLivro nao encontrado. Certifique-se de que o titulo esta correto e tente novamente.\n");
-    } else {
-        livro = buscar_livro_por_posicao(pos);
-        printf("\nLivro Selecionado para exlucsao:\n");
-        apresentar_cabecalho();
-        mostrar_livro(livro);
-        if (livro.flag) {
-            printf("Deseja excluir o livro? <S/N>: ");
-            scanf(" %c", &excluir);
-            excluir = toupper(excluir);
-            if (excluir == 'S') {
-                livro.flag = false;
-                sobreescrever_livro(livro, pos);
-            }
-        } else {
-            printf("\nO livro ja foi excluido anteriormente e nao pode ser excluido novamente.\n");
+    do {
+        printf("1 - Exclusao Logica\n");
+        printf("2 - Exclusao Fisica\n");
+        printf("0 - Sair\n\n");
+        printf("Digite a opcao: ");
+        scanf("%d", &op);
+        if (op < 0 || op > 2) {
+            printf("\nOpcao invalida. Selecione uma opcao valida...\n\n");
         }
+    } while (op < 0 || op > 2);
+    switch (op) {
+        case 0:
+            printf("Voltando ao menu principal...\n");
+            break;
+        case 1:
+            printf("Exclusao Logica\n");
+            fflush(stdin);
+            printf("Informe o titulo do livro que deseja excluir...:");
+            gets(titulo_livro);
+            pos = encontrar_livro_por_titulo(titulo_livro);
+            if (pos == -1) {
+                printf("\nLivro nao encontrado. Certifique-se de que o titulo esta correto e tente novamente.\n");
+            } else {
+                livro = buscar_livro_por_posicao(pos);
+                printf("\nLivro Selecionado para exlucsao:\n");
+                apresentar_cabecalho();
+                mostrar_livro(livro);
+                if (livro.flag) {
+                    printf("Deseja excluir o livro? <S/N>: ");
+                    scanf(" %c", &excluir);
+                    excluir = toupper(excluir);
+                    if (excluir == 'S') {
+                        livro.flag = false;
+                        sobreescrever_livro(livro, pos);
+                    }
+                } else {
+                    printf("\nO livro ja foi excluido anteriormente e nao pode ser excluido novamente.\n");
+                }
+                break;
+            case 2:
+                printf("Exclusao Fisica");
+                break;
+            }
     }
 }
 
@@ -320,7 +343,7 @@ void realizar_emprestimo() {
         apresentar_cabecalho();
         mostrar_livro(livro);
 
-        if(livro.situacao == 'D') {
+        if (livro.situacao == 'D') {
             printf("Deseja realmente emprestar o livro? <S/N>: ");
             scanf(" %c", &emprestar);
             emprestar = toupper(emprestar);
@@ -329,7 +352,6 @@ void realizar_emprestimo() {
                 livro.qntEmprestimo_livro++;
                 sobreescrever_livro(livro, pos);
                 printf("\nLivro emprestado com sucesso!\n");
-
             } else {
                 printf("\nOperacao de emprestimo cancelada.\n");
             }
@@ -357,7 +379,7 @@ void realizar_devolucao() {
         apresentar_cabecalho();
         mostrar_livro(livro);
 
-        if(livro.situacao == 'E') {
+        if (livro.situacao == 'E') {
             printf("\nDeseja confirmar a devolucao do livro? (S/N): ");
             scanf(" %c", &devolver);
             devolver = toupper(devolver);
@@ -365,12 +387,11 @@ void realizar_devolucao() {
                 livro.situacao = 'D';
                 sobreescrever_livro(livro, pos);
                 printf("\nDevolucao realizada com sucesso!\n");
-
             } else {
                 printf("\nDevolucao cancelada pelo usuário.\n");
             }
         } else {
-                printf("\nEste livro nao esta registrado como emprestado. Devolução nao necessária.\n");
+            printf("\nEste livro nao esta registrado como emprestado. Devolução nao necessária.\n");
         }
     }
 }
