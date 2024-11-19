@@ -181,7 +181,7 @@ void alterar_livro() {
         printf("\n");
         apresentar_cabecalho();
         mostrar_livro(livro);
-        qntEmprestimo = qntEmprestimo +  livro.qntEmprestimo_livro;
+        qntEmprestimo = qntEmprestimo + livro.qntEmprestimo_livro;
         printf("Quantidade de Emprestimos do Livro: %d...:", qntEmprestimo);
         if (livro.flag) {
             printf("\nDigite os novos dados para o livro selecionado...\n");
@@ -263,12 +263,30 @@ void excluir_titulo() {
                 }
                 break;
             case 2:
-                printf("Exclusao Fisica");
-                break;
+                printf("Exclusao Fisica\n");
+                FILE *atual, *novo;
+
+                atual = fopen("biblioteca.dat", "rb");
+                novo = fopen("novo.dat", "wb");
+                if (atual != NULL && novo != NULL) {
+                    while (fread(&livro, sizeof(tp_livro), 1, atual)) {
+                        if (livro.flag == true) {
+                            fwrite(&livro, sizeof(tp_livro), 1, novo);
+                            printf("\nLivros Selecionado para serem mantidos:\n");
+                            apresentar_cabecalho();
+                            mostrar_livro(livro);
+                        }
+                    }
+                    fclose(atual);
+                    fclose(novo);
+                    remove("biblioteca.dat");
+                    rename("novo.dat", "biblioteca.dat");
+                } else
+                    printf("Houve um erro!!!!");
             }
+            break;
     }
 }
-
 
 void recuperar_titulo() {
     char titulo_livro[100], recuperar;
