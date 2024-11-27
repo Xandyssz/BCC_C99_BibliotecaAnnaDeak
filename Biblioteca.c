@@ -172,7 +172,7 @@ void alterar_livro() {
 
     arq = fopen("biblioteca.dat", "rb+");
     if (arq == NULL) {
-        printf("\nO Arquivo binario nao existe.\n");
+        printf("O Arquivo binario nao existe.\n");
     } else {
         fflush(stdin);
         printf("Informe o titulo do livro que deseja alterar: ");
@@ -209,7 +209,7 @@ void pesquisar_por_titulo() {
 
     arq = fopen("biblioteca.dat", "rb+");
     if (arq == NULL) {
-        printf("\nO Arquivo binario nao existe.\n");
+        printf("O Arquivo binario nao existe.\n");
     } else {
         fflush(stdin);
         printf("Titulo do livro...: ");
@@ -240,7 +240,7 @@ void excluir_titulo() {
 
     arq = fopen("biblioteca.dat", "rb+");
     if (arq == NULL) {
-        printf("\nO Arquivo binario nao existe.\n");
+        printf("O Arquivo binario nao existe.\n");
     } else {
         do {
             printf("1 - Exclusao Logica\n");
@@ -317,7 +317,7 @@ void recuperar_titulo() {
 
     arq = fopen("biblioteca.dat", "rb+");
     if (arq == NULL) {
-        printf("\nO Arquivo binario nao existe..");
+        printf("O Arquivo binario nao existe..");
     } else {
         fflush(stdin);
         printf("Informe o titulo do livro que deseja recuperar..: ");
@@ -357,7 +357,7 @@ int somar_emprestimos() {
 
     arq = fopen("biblioteca.dat", "rb");
     if (arq == NULL) {
-        printf("\nO Arquivo binario nao existe..\n");
+        printf("O Arquivo binario nao existe..\n");
     } else {
         fread(&livro, sizeof(tp_livro), 1, arq);
         while (!feof(arq)) {
@@ -380,7 +380,7 @@ void realizar_emprestimo() {
 
     arq = fopen("biblioteca.dat", "rb+");
     if (arq == NULL) {
-        printf("\nO Arquivo binario nao existe..");
+        printf("O Arquivo binario nao existe.\n");
     } else {
         fflush(stdin);
         printf("Informe o numero do tombo do livro que deseja emprestar...: ");
@@ -423,10 +423,10 @@ void realizar_devolucao() {
 
     arq = fopen("biblioteca.dat", "rb+");
     if (arq == NULL) {
-        printf("\nO Arquivo binario nao existe..");
+        printf("O Arquivo binario nao existe..\n");
     } else {
         fflush(stdin);
-        printf("Informe o numero do tombo do livro que deseja devolver...: ");
+        printf("\nInforme o numero do tombo do livro que deseja devolver...: ");
         scanf("%d", &Nr_tombo_livro);
         pos = encontrar_livro_por_tombo(Nr_tombo_livro);
         if (pos == -1) {
@@ -450,7 +450,7 @@ void realizar_devolucao() {
                     printf("\nDevolucao cancelada pelo usuário.\n");
                 }
             } else {
-                printf("\nEste livro nao esta registrado como emprestado. Devolução nao necessária.\n");
+                printf("\nEste livro nao esta registrado como emprestado. Devolucao nao eh necessaria.\n");
             }
         }
         fclose(arq);
@@ -653,7 +653,7 @@ void main() {
                 break;
 
             case 5:
-                printf("\nRealizar Devolucao selecionada.\n");
+                printf("\nRealizar Devolucao selecionada.");
                 realizar_devolucao();
                 printf("\n");
                 break;
