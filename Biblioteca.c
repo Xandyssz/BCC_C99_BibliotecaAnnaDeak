@@ -13,6 +13,7 @@ typedef struct {
 } tp_livro;
 
 
+// 1.0 - FUNÇÃO PARA GRAVAR O LIVRO NO ARQUIVO BINÁRIO.
 void adicionar_livro(tp_livro livro) {
     FILE *arq;
     arq = fopen("biblioteca.dat", "ab");
@@ -27,6 +28,7 @@ void adicionar_livro(tp_livro livro) {
     }
 }
 
+// 1.1 - FUNÇÃO PARA VERIFICAR SE O "NR_TOMBO" JÁ EXISTE NO ARQUIVO BINÁRIO.
 bool verificarTombo(tp_int Nr_tombo_livro) {
     FILE *arq;
     tp_livro livro;
@@ -46,17 +48,20 @@ bool verificarTombo(tp_int Nr_tombo_livro) {
     return existe;
 }
 
+// 1.2 - REMOVE O CARACTERE DE QUEBRA DE LINHA (\N) DE UMA STRING
 void removerQuebra(char atributo[]) {
     if (atributo[strlen(atributo) - 1] == '\n') {
         atributo[strlen(atributo) - 1] = '\0';
     }
 }
 
+// 1.3 - LÊ UMA STRING DO USUÁRIO E REMOVE O CARACTERE DE QUEBRA DE LINHA USANDO A FUNÇÃO REMOVERQUEBRA
 void lerString(char atributo[], int tamanho) {
     fgets(atributo, tamanho, stdin);
     removerQuebra(atributo);
 }
 
+// 1.4 - Lê um número inteiro do usuário, verificando se o valor é maior que 0.
 void lerInt(int *atributo) {
     do {
         scanf("%d", atributo);
@@ -277,82 +282,75 @@ void pesquisar_por_titulo() {
 }
 
 void excluir_titulo() {
-    FILE *arq;
-    char excluir;
+    char titulo_livro[100], excluir;
     tp_livro livro;
     int pos, op;
 
-    arq = fopen("biblioteca.dat", "rb+");
-    if (arq == NULL) {
-        printf("O Arquivo binario nao existe.\n");
-    } else {
-        do {
-            printf("1 - Exclusao Logica\n");
-            printf("2 - Exclusao Fisica\n");
-            printf("0 - Sair\n\n");
-            printf("Digite a opcao: ");
-            scanf("%d", &op);
-            if (op < 0 || op > 2) {
-                printf("\nOpcao invalida. Selecione uma opcao valida...\n");
-            }
-        } while (op < 0 || op > 2);
-        switch (op) {
-            case 0:
-                printf("Voltando ao menu principal...\n");
-                break;
-            case 1:
-                printf("Exclusao Logica\n");
-                fflush(stdin);
-                printf("Informe o titulo do livro que deseja excluir...:");
-                lerString(livro.titulo_livro, 100);
-                pos = encontrar_livro_por_titulo(livro.titulo_livro);
-                if (pos == -1) {
-                    printf("\nLivro nao encontrado. Certifique-se de que o titulo esta correto e tente novamente.\n");
-                } else {
-                    livro = buscar_livro_por_posicao(pos);
-                    printf("\nLivro Selecionado para exlucsao:\n");
-                    apresentar_cabecalho();
-                    mostrar_livro(livro);
-                    if (livro.flag) {
-                        printf("Deseja excluir o livro? <S/N>: ");
-                        scanf(" %c", &excluir);
-                        excluir = toupper(excluir);
-                        if (excluir == 'S') {
-                            livro.flag = false;
-                            sobreescrever_livro(livro, pos);
-                        } else {
-                            printf("\nExclusao cancelada! Retornando ao Menu...\n");
-                        }
-                    } else {
-                        printf("\nO livro ja foi excluido anteriormente e nao pode ser excluido novamente.\n");
+    do {
+        printf("1 - Exclusao Logica\n");
+        printf("2 - Exclusao Fisica\n");
+        printf("0 - Sair\n\n");
+        printf("Digite a opcao: ");
+        scanf("%d", &op);
+        if (op < 0 || op > 2) {
+            printf("\nOpcao invalida. Selecione uma opcao valida...\n\n");
+        }
+    } while (op < 0 || op > 2);
+    switch (op) {
+        case 0:
+            printf("Voltando ao menu principal...\n");
+            break;
+        case 1:
+            printf("Exclusao Logica\n");
+            fflush(stdin);
+            printf("Informe o titulo do livro que deseja excluir...:");
+            gets(titulo_livro);
+            pos = encontrar_livro_por_titulo(titulo_livro);
+            if (pos == -1) {
+                printf("\nLivro nao encontrado. Certifique-se de que o titulo esta correto e tente novamente.\n");
+            } else {
+                livro = buscar_livro_por_posicao(pos);
+                printf("\nLivro Selecionado para exlucsao:\n");
+                apresentar_cabecalho();
+                mostrar_livro(livro);
+                if (livro.flag) {
+                    printf("Deseja excluir o livro? <S/N>: ");
+                    scanf(" %c", &excluir);
+                    excluir = toupper(excluir);
+                    if (excluir == 'S') {
+                        livro.flag = false;
+                        sobreescrever_livro(livro, pos);
                     }
-                    break;
-                case 2:
-                    printf("Exclusao Fisica selecionada...\n");
-                    printf("Livros a serem mantidos no sistema:\n");
-                    FILE *atual, *novo;
-
-                    atual = fopen("biblioteca.dat", "rb");
-                    novo = fopen("novo.dat", "wb");
-                    if (atual != NULL && novo != NULL) {
-                        while (fread(&livro, sizeof(tp_livro), 1, atual)) {
-                            if (livro.flag == true) {
-                                fwrite(&livro, sizeof(tp_livro), 1, novo);
-                                mostrar_livro(livro);
-                            }
-                        }
-                        fclose(atual);
-                        fclose(novo);
-                        remove("biblioteca.dat");
-                        rename("novo.dat", "biblioteca.dat");
-                    } else
-                        printf("Erro no Arquivo Binário..");
+                } else {
+                    printf("\nO livro ja foi excluido anteriormente e nao pode ser excluido novamente.\n");
                 }
                 break;
-        }
-        fclose(arq);
+            case 2:
+                printf("Exclusao Fisica\n");
+                FILE *atual, *novo;
+
+                atual = fopen("biblioteca.dat", "rb");
+                novo = fopen("novo.dat", "wb");
+                if (atual != NULL && novo != NULL) {
+                    printf("\nLivros Selecionado para serem mantidos:\n");
+                    apresentar_cabecalho();
+                    while (fread(&livro, sizeof(tp_livro), 1, atual)) {
+                        if (livro.flag == true) {
+                            fwrite(&livro, sizeof(tp_livro), 1, novo);
+                            mostrar_livro(livro);
+                        }
+                    }
+                    fclose(atual);
+                    fclose(novo);
+                    remove("biblioteca.dat");
+                    rename("novo.dat", "biblioteca.dat");
+                } else
+                    printf("Houve um erro!!!!");
+            }
+            break;
     }
 }
+
 
 void recuperar_titulo() {
     FILE *arq;
