@@ -23,6 +23,8 @@ Este trabalho foi desenvolvido como parte da disciplina **Algoritmos e Programa�
 - **Alterar Livro:** Atualize informações como título, autores e ano de publicação. `A quantidade de empréstimos permanece inalterada.`
 - **Pesquisar Livro:** Busque livros pelo título e visualize suas informações.
 - **Excluir Livro:** Marque um livro como inativo (exclusão lógica).
+- **Excluir Livro:** Remove permanentemente um livro do sistema. (Exclusão Física) Este processo é irreversível.
+
 - **Recuperar Livro:** Reative um livro previamente excluído logicamente.
 
 ### 3. Relatórios
@@ -33,6 +35,9 @@ Este trabalho foi desenvolvido como parte da disciplina **Algoritmos e Programa�
 - **Livros Emprestados:**
   - Lista todos os livros com situação `E - Emprestado`.
   - Exibe a quantidade total de livros emprestados.
+ 
+- **Livros Indisponíveis:**
+  - Lista todos os livros que estão indisponiveis ou seja `flag - false`
 
 ### 4. Empréstimos e Devoluções
 - **Realizar Empréstimo:**
@@ -51,8 +56,16 @@ Este trabalho foi desenvolvido como parte da disciplina **Algoritmos e Programa�
 ## 🗂️ Estrutura do Código
 
 ### Arquivos
-- **`biblioteca.c`**: Contém toda a lógica do sistema, incluindo as funções de gerenciamento de livros e interação com o usuário.
+- **`biblioteca.c`**: Contém toda a lógica do sistema, incluindo as funções de gerenciamento de livros e interação com o usuário. | Executa s/ Bibilioteca.
+- **`gerenciar_biblioteca.c`**: Arquivo com funções específicas para manipular os dados da biblioteca. | Executa c/ bibliotecas
 - **`biblioteca.dat`**: Arquivo binário usado para armazenar os dados dos livros.
+
+### Biblioteca
+- **`biblioteca_arquivo.h`**: Contém funções para manipulação do arquivo binário `biblioteca.dat`.
+- **`biblioteca_interface.h`**: Implementa a interface do programa, incluindo os menus.
+- **`estrutura.h`**: Define as estruturas de dados, como a `tp_livro`.
+
+
 
 ### Estrutura de Dados
 A estrutura `tp_livro` define os campos necessários para representar um livro:
@@ -123,6 +136,7 @@ gcc -o biblioteca biblioteca.c
 4 - Realizar Empréstimo
 5 - Realizar Devolução
 6 - Relatório de Livros [EMPRESTADOS]
+7 - Relatório de Livros [INDISPONIVEIS]
 0 - Sair
 ```
 - 1 - Inclusão de Novos Livros
