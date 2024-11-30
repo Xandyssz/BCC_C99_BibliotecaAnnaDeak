@@ -15,7 +15,6 @@ typedef struct {
 
 void adicionar_livro(tp_livro livro) {
     FILE *arq;
-
     arq = fopen("biblioteca.dat", "ab");
     if (arq == NULL)
         arq = fopen("biblioteca.dat", "wb");
@@ -28,14 +27,31 @@ void adicionar_livro(tp_livro livro) {
     }
 }
 
-// Função para remover a quebra de linha no final da string
-void removerQuebra(char str[]) {
-    if (str[strlen(str) - 1] == '\n') {
-        str[strlen(str) - 1] = '\0';
+bool verificarTombo(tp_int Nr_tombo_livro) {
+    FILE *arq;
+    tp_livro livro;
+    bool existe = false;
+    arq = fopen("biblioteca.dat", "rb");
+    if (arq == NULL) {
+        return false;
+    }
+    fread(&livro, sizeof(tp_livro), 1, arq);
+    while (!feof(arq)) {
+        if (livro.flag && livro.Nr_tombo_livro == Nr_tombo_livro) {
+            existe = true;
+        }
+        fread(&livro, sizeof(tp_livro), 1, arq);
+    }
+    fclose(arq);
+    return existe;
+}
+
+void removerQuebra(char atributo[]) {
+    if (atributo[strlen(atributo) - 1] == '\n') {
+        atributo[strlen(atributo) - 1] = '\0';
     }
 }
 
-// Função para ler uma string (char) com um tamanho máximo
 void lerString(char atributo[], int tamanho) {
     fgets(atributo, tamanho, stdin);
     removerQuebra(atributo);
@@ -53,9 +69,13 @@ void lerInt(int *atributo) {
 tp_livro criar_livro() {
     tp_livro livro;
 
-    printf("Tombo do livro...:");
-    // scanf("%d", &livro.Nr_tombo_livro);
-    lerInt(&livro.Nr_tombo_livro);
+    do {
+        printf("Tombo do livro...:");
+        lerInt(&livro.Nr_tombo_livro);
+        if (verificarTombo(livro.Nr_tombo_livro)) {
+            printf("Tombo ja Cadastrado, insira outro tombo\n");
+        }
+    } while (verificarTombo(livro.Nr_tombo_livro));
 
     fflush(stdin);
     printf("Titulo do livro...: ");
@@ -65,7 +85,6 @@ tp_livro criar_livro() {
     lerString(livro.autores_livro, 100);
 
     printf("Ano do livro...:");
-    // scanf("%d", &livro.ano_livro);
     lerInt(&livro.ano_livro);
 
     livro.situacao = 'D';
@@ -301,6 +320,8 @@ void excluir_titulo() {
                         if (excluir == 'S') {
                             livro.flag = false;
                             sobreescrever_livro(livro, pos);
+                        } else {
+                            printf("\nExclusao cancelada! Retornando ao Menu...\n");
                         }
                     } else {
                         printf("\nO livro ja foi excluido anteriormente e nao pode ser excluido novamente.\n");
@@ -342,7 +363,7 @@ void recuperar_titulo() {
 
     arq = fopen("biblioteca.dat", "rb+");
     if (arq == NULL) {
-        printf("O Arquivo binario nao existe..");
+        printf("O Arquivo binario nao existe.\n");
     } else {
         fflush(stdin);
         printf("Informe o titulo do livro que deseja recuperar..: ");
@@ -485,7 +506,7 @@ void realizar_devolucao() {
 void mostrar_livros_por_filtro() {
     FILE *arq;
     tp_livro livro;
-    int op;
+    int op, contLivro = 0;
 
     do {
         printf("1 - Relatorio de livros Emprestados\n");
@@ -511,23 +532,31 @@ void mostrar_livros_por_filtro() {
                 printf("\n");
 
                 fread(&livro, sizeof(tp_livro), 1, arq);
-                apresentar_cabecalho();
                 while (!feof(arq)) {
                     if (livro.flag) {
                         if ((op == 1 && livro.situacao == 'E') || (op == 2 && livro.situacao == 'D')) {
+                            if (!contLivro) {
+                                apresentar_cabecalho();
+                            }
                             mostrar_livro(livro);
-                        } else {
-                            printf("Nao ha livros cadastrados no sistema...\n");
+                            contLivro++;
                         }
                     }
                     fread(&livro, sizeof(tp_livro), 1, arq);
                 }
+                if (!contLivro) {
+                    if (op == 1) {
+                        printf("Nao ha livros emprestados no sistema.\n");
+                    } else {
+                        printf("Nao ha livros emprestados no sistema.\n");
+                    }
+                }
+
                 fclose(arq);
             }
             break;
         case 3:
-            // printf("\nTotal de Emprestimos Realizados: %d\n", somar_emprestimos());
-            somar_emprestimos(); // MEXI AQUI
+            somar_emprestimos();
             break;
     }
 }
@@ -546,17 +575,21 @@ void listar_emprestados() {
         while (!feof(arq)) {
             if (livro.flag) {
                 if (livro.situacao == 'E') {
-                    apresentar_cabecalho();
+                    if (!qtd_emprestados) {
+                        apresentar_cabecalho();
+                    }
                     mostrar_livro(livro);
                     qtd_emprestados++;
-                    printf("\nQuantidade de Livros Emprestados: %d\n", qtd_emprestados);
-                } else {
-                  printf("Nao ha livros indisponiveis no sistema...\n");
                 }
             }
             fread(&livro, sizeof(tp_livro), 1, arq);
         }
-
+        // Se nenhum livro foi encontrado
+        if (!qtd_emprestados) {
+            printf("Nao ha livros emprestados no sistema.\n");
+        } else {
+            printf("\nQuantidade de Livros Emprestados: %d\n", qtd_emprestados);
+        }
         fclose(arq);
     }
 }
@@ -565,6 +598,7 @@ void listar_emprestados() {
 void listar_indisponiveis() {
     FILE *arq;
     tp_livro livro;
+    int contIndisponiveis = 0;
 
     arq = fopen("biblioteca.dat", "rb");
     if (arq == NULL) {
@@ -573,15 +607,18 @@ void listar_indisponiveis() {
         fread(&livro, sizeof(tp_livro), 1, arq);
         while (!feof(arq)) {
             if (!livro.flag) {
-                printf("\n");
-                apresentar_cabecalho();
+                if (!contIndisponiveis) {
+                    printf("\n");
+                    apresentar_cabecalho();
+                }
                 mostrar_livro(livro);
-            } else {
-            printf("Nao ha livros indisponiveis no sistema...\n");
+                contIndisponiveis++;
             }
             fread(&livro, sizeof(tp_livro), 1, arq);
         }
-
+        if (!contIndisponiveis) {
+            printf("Nao ha livros indisponiveis no sistema.\n");
+        }
         fclose(arq);
     }
 }
@@ -679,7 +716,7 @@ void main() {
                 break;
 
             case 5:
-                printf("\nRealizar Devolucao selecionada.");
+                printf("Realizar Devolucao selecionada.");
                 realizar_devolucao();
                 printf("\n");
                 break;
