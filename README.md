@@ -112,16 +112,6 @@ git clone https://github.com/Xandyssz/BCC_C99_BibliotecaAnnaDeak.git
 cd BCC_C99_BibliotecaAnnaDeak
 ```
 
-- Compile o Código:
-```
-gcc -o biblioteca biblioteca.c
-```
-
-- Execute o programa:
-```
-./biblioteca
-```
-
 ## 🗒️ Exemplo de Execução
 - Menu Principal
 ```
